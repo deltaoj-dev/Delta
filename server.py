@@ -8,28 +8,27 @@ class DeltaHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 			self.send_header("Content-type","text/html")
 			self.end_headers()
 			shutil.copyfileobj(open("index.html","rb"),self.wfile)
-		elif self.path=='/bootstrap.min.css':
+		elif self.path=='/favicon.ico':
 			self.send_response(http.server.HTTPStatus.OK)
-			self.send_header("Content-type","text/css")
+			self.send_header("Content-type","image/x-icon")
 			self.end_headers()
-			shutil.copyfileobj(open("bootstrap.min.css","rb"),self.wfile)
-		elif self.path=='/bootstrap.min.css.map':
-			self.send_response(http.server.HTTPStatus.OK)
-			self.send_header("Content-type","application/json")
-			self.end_headers()
-			shutil.copyfileobj(open("bootstrap.min.css.map","rb"),self.wfile)
-		elif self.path=='/bootstrap.bundle.min.js':
-			self.send_response(http.server.HTTPStatus.OK)
-			self.send_header("Content-type","application/x-javascript")
-			self.end_headers()
-			shutil.copyfileobj(open("bootstrap.bundle.min.js","rb"),self.wfile)
-		elif self.path=='/bootstrap.bundle.min.js.map':
-			self.send_response(http.server.HTTPStatus.OK)
-			self.send_header("Content-type","application/json")
-			self.end_headers()
-			shutil.copyfileobj(open("bootstrap.bundle.min.js.map","rb"),self.wfile)
+			shutil.copyfileobj(open(self.path[1:],"rb"),self.wfile)
+		elif self.path[:8]=='/assets/':
+			try:
+				f=open(self.path[1:],"rb")
+				self.send_response(http.server.HTTPStatus.OK)
+				if self.path[-4:]=='.css':
+					self.send_header("Content-type","text/css")
+				elif self.path[-3:]=='.js':
+					self.send_header("Content-type","application/x-javascript")
+				elif self.path[-4:]=='.map' or self.path[-4:]=='.json':
+					self.send_header("Content-type","application/json")
+				self.end_headers()
+				shutil.copyfileobj(f,self.wfile)
+			except IOError:
+				self.send_error(http.server.HTTPStatus.NOT_FOUND)
 		else:
-			self.send_error(http.server.HTTPStatus.NOT_FOUND)
+			self.send_error(http.server.HTTPStatus.FORBIDDEN)
 
 if __name__=='__main__':
 	server_address=('',8000)
