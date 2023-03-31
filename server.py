@@ -1,11 +1,18 @@
 import http.server
 import shutil
 
+class DeltaCookie(http.cookie.BaseCookie):
+	def value_decode(self,val):
+		return val,val
+	def value_encode(self,val):
+		strval=str(val)
+		return strval,strval
+
 class DeltaHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 	def do_GET(self):
 		if self.path=='/':
 			self.send_response(http.server.HTTPStatus.OK)
-			self.send_header("Content-type","text/html")
+			self.send_header("Content-type","text/html;char-set=utf-8")
 			self.end_headers()
 			shutil.copyfileobj(open("index.html","rb"),self.wfile)
 		elif self.path=='/favicon.ico':
@@ -21,7 +28,7 @@ class DeltaHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 					self.send_header("Content-type","text/css")
 				elif self.path[-3:]=='.js':
 					self.send_header("Content-type","application/x-javascript")
-				elif self.path[-4:]=='.map' or self.path[-4:]=='.json':
+				elif self.path[-4:]=='.map' or self.path[-5:]=='.json':
 					self.send_header("Content-type","application/json")
 				self.end_headers()
 				shutil.copyfileobj(f,self.wfile)
