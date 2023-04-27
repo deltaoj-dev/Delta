@@ -46,6 +46,6 @@ if __name__=='__main__':
 	httpd=http.server.HTTPServer(server_address,DeltaHTTPRequestHandler)
 	for arg in sys.argv:
 		if arg=='--https':
-			httpd.socket=ssl.wrap_socket(httpd.socket,server_side=True,certfile='./cert.pem',keyfile='./key.pem',ssl_version=ssl.PROTOCOL_TLSv1)
+			httpd.socket=ssl.wrap_socket(httpd.socket,server_side=True,certfile='./cert.pem',keyfile='./key.pem',ssl_version=ssl.PROTOCOL_TLS_SERVER)
 			break
 	httpd.serve_forever()
